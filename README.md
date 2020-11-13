@@ -33,19 +33,32 @@ Features:
 ---------------------------------------------------------------------------------
 | Region_file | Process Time(s) (pandas) | Process Time(s) (spark) | num_record |
 |-------------|--------------------------|-------------------------|------------|
-|CA|369|-|40807|
-|DE|297|-|40584|
-|FR|384|-|40610|
-|GB|367|-|38826|
-|IN|355|-|37247|
-|JP **|-|-|-|
-|KR **|-|-|-|
-|MX **|-|-|-|
-|RU **|-|-|-|
-|US|361|-|40949|
-|Total|2140|-|239023|
+|     CA      |           369            |     -                   |    40807   |
+|     DE      |           297            |     -                   |    40584   |
+|     FR      |           384            |     -                   |    40610   |
+|     GB      |           367            |     -                   |    38826   |
+|     IN      |           355            |     -                   |    37247   |
+|    JP^1     |            56            |     -                   |    20505   |
+|   KR^1^2    |            93            |     -                   |    34279   |
+|    MX^1     |           533            |     -                   |    40197   |
+|   RU^1^2    |           357            |     -                   |    39183   |
+|     US      |           361            |     -                   |    40949   |
+|   Total     |          3172            |     -                   |   373187   |
+---------------------------------------------------------------------------------
 
-** The files are not fully written in utf-8 and cannot be decoded, except decode it as random characters. As they are in unfamiliar languages, Those files are omitted. 
+^1 The files are not fully written in utf-8 and cannot be decoded normally, the corrupted bytes are removed (by scanning the file byte by bytes) <br>
+^2 The files have corrupted records that some description contains non-escaped \n in the description, making the record span in a number of rows. These rows and removed (by scanning the file line by line)
+
+### Corrupted Files
+
+----------------------------------------------------------------------------------------------------------
+| Region_file | Process Time(s) (pandas) | Process Time(s) (spark) | num_byte removed | num_line removed |
+|-------------|--------------------------|-------------------------|------------------|------------------|
+|     JP      |                          |                         |        9         |        0         |
+|     KR      |                          |                         |       66         |        1         |
+|     MX      |                          |                         |        3         |        0         |
+|     RU      |                          |                         |       43         |        9         |
+----------------------------------------------------------------------------------------------------------
 
 ## EDA
 

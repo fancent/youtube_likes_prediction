@@ -1,3 +1,4 @@
+
 # Group Project MSBD 5003
 ## Introduction
 
@@ -30,22 +31,36 @@ Features:
 
 ### result 
 
----------------------------------------------------------------------------------
-| Region_file | Process Time(s) (pandas) | Process Time(s) (spark) | num_record |
-|-------------|--------------------------|-------------------------|------------|
-|CA|369|-|40807|
-|DE|297|-|40584|
-|FR|384|-|40610|
-|GB|367|-|38826|
-|IN|355|-|37247|
-|JP **|-|-|-|
-|KR **|-|-|-|
-|MX **|-|-|-|
-|RU **|-|-|-|
-|US|361|-|40949|
-|Total|2140|-|239023|
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Region_file | Process Time(s) (pandas) | Process Time(s) (spark) | Process Time(s) (swifter) | Process Time(s) (pandarallel) | num_record |
+|-------------|--------------------------|-------------------------|---------------------------|-------------------------------|------------|
+|     CA      |           369            |           164           |            381            |               117             |    40807   |
+|     DE      |           297            |           145           |            327            |               101             |    40584   |
+|     FR      |           384            |           170           |            423            |               122             |    40610   |
+|     GB      |           367            |           197           |            374            |               125             |    38826   |
+|     IN      |           355            |           192           |            375            |               145             |    37247   |
+|    JP^1     |            56            |            32           |             62            |                34             |    20505   |
+|   KR^1^2    |            93            |            44           |            106            |                57             |    34279   |
+|    MX^1     |           533            |           198           |            543            |               160             |    40197   |
+|   RU^1^2    |           357            |           120           |            357            |               154             |    39183   |
+|     US      |           361            |           112           |            229            |                73             |    40949   |
+|   Total     |          3172            |          1384           |           3177            |              1088             |   373187   |
+---------------------------------------------------------------------------------------------------------------------------------------------
 
-** The files are not fully written in utf-8 and cannot be decoded, except decode it as random characters. As they are in unfamiliar languages, Those files are omitted. 
+^1 The files are not fully written in utf-8 and cannot be decoded normally, the corrupted bytes are removed (by scanning the file byte by bytes) <br>
+^2 The files have corrupted records that some description contains non-escaped \n in the description, making the record span in a number of rows. These rows and removed (by scanning the file line by line)
+
+### Corrupted Files
+
+----------------------------------------------------------------------------------------------------------
+| Region_file | Process Time(s) (pandas) | Process Time(s) (spark) | num_byte removed | num_line removed |
+|-------------|--------------------------|-------------------------|------------------|------------------|
+|     JP      |          1.23            |                         |        9         |        0         |
+|     KR      |          5.77            |                         |       66         |        1         |
+|     MX      |          1.93            |                         |        3         |        0         |
+|     RU      |         10.81            |                         |       43         |        9         |
+|   Total     |         19.74            |                         |       121        |       10         |
+----------------------------------------------------------------------------------------------------------
 
 ## EDA
 

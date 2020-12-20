@@ -1,5 +1,4 @@
 import json
-import pandas as pd
 import os
 import langdetect
 from time import time
@@ -7,7 +6,19 @@ from io import StringIO
 import csv
 import numpy as np
 
-os.chdir(os.path.dirname(__file__))
+os.environ["MODIN_ENGINE"] = "dask"
+useParallel = 'swifter'
+if useParallel == 'modin':
+    import modin.pandas as pd
+elif useParallel == 'pandarallel':
+    from pandarallel import pandarallel
+    pandarallel.initialize()
+    import pandas as pd
+else:
+    import swifter
+    import pandas as pd
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 print('Working Directory:', os.path.abspath('.'))
 
 
@@ -131,7 +142,14 @@ if __name__ == '__main__':
             data = data.merge(category_data, on='category_id')
             data['region'] = region
             detect_lang_time = time()
-            data['lang'] = data['title'].apply(lambda x: detect_language(x))
+            if useParallel == 'swifter':
+                data['lang'] = data['title'].swifter.progress_bar(False).apply(lambda x: detect_language(x))
+            elif useParallel == 'pandarallel':
+                data['lang'] = data['title'].parallel_apply(lambda x: detect_language(x))
+            elif useParallel == 'modin':
+                data['lang'] = data['title'].apply(lambda x: detect_language(x))
+            else:
+                data['lang'] = data['title'].apply(lambda x: detect_language(x))
             print(f"Detect language: {time() - detect_lang_time}s")
             data.to_csv(f'../data/processed/{region}.csv', index=False)
             print(f"Finished process {region} (with {len(data)} records) in {time() - start_time:.2f}s")
@@ -141,3 +159,12 @@ if __name__ == '__main__':
             print(e)
     print()
     print(f"Finished all process (with {count} records) in {time() - global_start_time:.2f}s")
+
+    """
+        Merge all the data to one file
+    """
+    datas = []
+    for region in regions:
+        datas.append(pd.read_csv(f'../data/processed/{region}.csv', encoding='utf-8-sig'))
+    datas = pd.concat(datas)
+    datas.to_csv('../data/processed/all.csv', index=False)
